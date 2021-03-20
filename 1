@@ -1,0 +1,38 @@
+from qutip import*
+from math import *
+import numpy as np
+from scipy.constants import hbar
+Nf = int(input('ВВедите количество фотонов '))
+Nm = int(input('ВВедите количество мод '))
+B = (pi/4)
+
+for i in range(Nm):
+    if i==0:
+        n0 = int(input('Введите состояние  первой  моды '))
+        psi_in = tensor(basis(Nf,n0))
+    else:
+        ni = int(input('Введите состояние слудующей  моды '))
+        psi_in = tensor(psi_in,basis(Nf,ni))
+
+list_a=[destroy(Nf)]
+for j in range(Nm//2-1):
+    list_a.append(qeye(Nf))
+
+a=tensor(list_a)
+
+H=hbar
+h1=0
+h2=0
+for m in range(Nm):
+    h1 = B*tensor(a.dag(),a)+h1
+    for j in range(Nm):
+        if m != j:
+            h2=h2+B*tensor(a.dag(),a)
+    H=h1+h2
+    
+tlist = np.linspace(1,2,num=1)
+print(H)
+
+result = mesolve(H, psi_in, tlist, [], [])
+
+print(result.states)
